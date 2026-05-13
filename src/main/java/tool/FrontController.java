@@ -1,57 +1,45 @@
 package tool;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns={"*.action"})
+@WebServlet("*.action")
 public class FrontController extends HttpServlet {
 
-	@Override
-	public void doPost(
-			HttpServletRequest request, HttpServletResponse response
-		) throws ServletException, IOException {
-			System.out.println("Frontcontroller!");
-			PrintWriter out=response.getWriter();
-	        try {
-	            // ① リクエストされたURLのパスを取得
-	            String path = request.getServletPath().substring(1);
-	            // 例: "/chapter23/Search.action" → "chapter23/Search.action"
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, java.io.IOException {
 
-	            // ② パスをアクションクラス名の形式に変換
-	            String name = path.replace(".a", "A").replace('/', '.');
-	            // 例: "chapter23/Search.action" → "chapter23.SearchAction"
+        request.setCharacterEncoding("UTF-8");
 
-	            System.out.println("アクションクラス名 : " + name);
-	            // ③ アクションクラスのインスタンスを動的に生成
-	            Action action = (Action)Class.forName(name).
-	                getDeclaredConstructor().newInstance();
-	            // クラスを動的ロードし、コンストラクタを呼び出してインスタンスを作成
+        try {
+            // 例: /scoremanager/Logout.action
+            String servletPath = request.getServletPath();
 
-	            // ④ executeメソッドを実行し、フォワード先のURLを取得
-	            String url = action.execute(request, response);
-	            // 例: "/searchResult.jsp" など
+            // 最後の "/" 以降を取得 → Logout.action
+            String actionName = servletPath.substring(servletPath.lastIndexOf("/") + 1);
 
-	            // ⑤ 指定されたURLへフォワード
-	            request.getRequestDispatcher(url).forward(request, response);
+            // .action を除去 → Logout
+            actionName = actionName.replace(".action", "");
 
-	        } catch (Exception e) {
-	            e.printStackTrace(out); // エラー発生時はスタックトレースを出力
-	        }
-		}
+            // Action クラス名を組み立てる → LogoutAction
+            String className = "scoremanager." + actionName + "Action";
 
-	    /**
-	     * GETリクエストの処理
-	     * - doPostメソッドを呼び出して、POSTリクエストと同じ処理を実行
-	     */
-	public void doGet(
-			HttpServletRequest request, HttpServletResponse response
-		) throws ServletException, IOException {
-			doPost(request, response);// GETリクエストもPOSTと同様に処理
-		}
-	}
+            Class<?> clazz = Class.forName(className);
+            Action action = (Action) clazz.getDeclaredConstructor().newInstance();
+            action.execute(request, response);
+
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, java.io.IOException {
+        doGet(request, response);
+    }
+}

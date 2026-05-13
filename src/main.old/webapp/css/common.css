@@ -1,0 +1,25 @@
+
+body {
+    font-family: "Meiryo", sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== ヘッダ ===== */
+.header {
+    background-color: #2b6cb0;
+    color: white;
+    padding: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* ===== フッタ ===== */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #666;
+    font-size: 13px;
+}

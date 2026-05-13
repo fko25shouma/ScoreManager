@@ -17,7 +17,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
-    <span class="navbar-brand">得点管理システム</span>
+    <span class="navbar-brand">得点管理システム（α ver 1.00.000a）</span>
 
     <div class="d-flex">
       <c:if test="${not empty loginUser}">

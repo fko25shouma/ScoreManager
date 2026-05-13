@@ -11,9 +11,9 @@
     </c:if>
 
     <c:if test="${not empty subject}">
-        <div class="mb-3">
-            <span class="fw-bold">科目：</span>${subject.name} 
-            <span class="ms-3 fw-bold">条件：</span>${entYear}年度 ${classNum}クラス
+        <div class="mb-3 alert alert-info py-2">
+            <strong>科目：</strong>${subject.name}　
+            <strong>検索条件：</strong>${entYear}年度 ${classNum}クラス
         </div>
     </c:if>
 
@@ -25,13 +25,13 @@
             <div class="card shadow-sm overflow-auto">
                 <div class="card-body p-0">
                     <table class="table table-bordered table-hover mb-0">
-                        <thead class="table-light text-center">
+                        <thead class="table-light text-center align-middle">
                             <tr>
                                 <th>学生番号</th>
                                 <th>氏名</th>
                                 <th>クラス</th>
                                 <c:forEach var="i" begin="1" end="10">
-                                    <th style="min-width: 60px;">${i}回</th>
+                                    <th style="min-width: 55px;">${i}回</th>
                                 </c:forEach>
                             </tr>
                         </thead>
@@ -43,6 +43,7 @@
                                     <td class="text-center">${row.classNum}</td>
                                     <c:forEach var="i" begin="1" end="10">
                                         <td class="text-end">
+                                            <%-- 点数が-1（未受験）の場合は「-」を表示 --%>
                                             <c:choose>
                                                 <c:when test="${row.points[i] == -1}">-</c:when>
                                                 <c:otherwise>${row.points[i]}</c:otherwise>
@@ -63,4 +64,4 @@
     </div>
 </div>
 
-<jsp:include page="/footer.jsp" />
+<jsp:include page="/footer.html" />

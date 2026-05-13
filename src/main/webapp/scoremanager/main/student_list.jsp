@@ -3,6 +3,7 @@
 
 <jsp:include page="/header.jsp" />
 
+<jsp:include page="nav.jsp" />
 <div class="layout">
 
 

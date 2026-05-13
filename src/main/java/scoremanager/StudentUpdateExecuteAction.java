@@ -12,75 +12,46 @@ import tool.Action;
 public class StudentUpdateExecuteAction extends Action {
 
     @Override
-    public void execute(HttpServletRequest req, HttpServletResponse resp)
-            throws Exception {
-
-        HttpSession session = req.getSession();
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // --- 1. 準備 ---
+        HttpSession session = request.getSession();
         Teacher teacher = (Teacher) session.getAttribute("user");
+        StudentDao sDao = new StudentDao();
 
-        // ▼ ログインチェック
-        if (teacher == null || !teacher.isAuthenticated()) {
-            resp.sendRedirect("Login.action");
-            return;
-        }
+        // --- 2. リクエストパラメータの取得 ---
+        String entYearStr = request.getParameter("ent_year");
+        String no = request.getParameter("no");
+        String name = request.getParameter("name");
+        String classNum = request.getParameter("class_num");
+        String isAttendStr = request.getParameter("is_attend"); // チェックボックス
 
-        // ▼ パラメータ取得
-        String no = req.getParameter("no");
-        String name = req.getParameter("name");
-        String entYearStr = req.getParameter("ent_year");
-        String classNum = req.getParameter("class_num");
+        // 数値への変換
+        int entYear = Integer.parseInt(entYearStr);
+        // チェックボックスがONなら true, OFF(null)なら false
+        boolean isAttend = (isAttendStr != null);
 
-        boolean hasError = false;
-
-        // ▼ 入力チェック
-        if (no == null || no.isBlank()) {
-            req.setAttribute("error_no", "学生番号が不正です");
-            hasError = true;
-        }
-        if (name == null || name.isBlank()) {
-            req.setAttribute("error_name", "氏名を入力してください");
-            hasError = true;
-        }
-        if (entYearStr == null || entYearStr.isBlank()) {
-            req.setAttribute("error_ent_year", "入学年度を選択してください");
-            hasError = true;
-        }
-        if (classNum == null || classNum.isBlank()) {
-            req.setAttribute("error_class_num", "クラスを選択してください");
-            hasError = true;
-        }
-
-        // ▼ エラー時は元の画面へ戻す
-        if (hasError) {
-            req.setAttribute("no", no);
-            req.setAttribute("name", name);
-            req.setAttribute("ent_year", entYearStr);
-            req.setAttribute("class_num", classNum);
-
-            req.getRequestDispatcher("/scoremanager/main/student_update.jsp")
-               .forward(req, resp);
-            return;
-        }
-
-        // ▼ 更新処理
-        StudentDao dao = new StudentDao();
-        Student student = dao.get(no);
-
-        if (student == null) {
-            req.setAttribute("error", "学生情報が存在しません");
-            req.getRequestDispatcher("/scoremanager/main/student_update.jsp")
-               .forward(req, resp);
-            return;
-        }
-
+        // --- 3. 更新用データの作成 ---
+        // 既存の学生情報を取得するか、新しくインスタンスを作って値をセットする
+        Student student = new Student();
+        student.setNo(no);
         student.setName(name);
-        student.setEntYear(Integer.parseInt(entYearStr));
+        student.setEntYear(entYear);
         student.setClassNum(classNum);
+        student.setAttend(isAttend);
+        student.setSchool(teacher.getSchool()); // ログインユーザーの学校をセット
 
-        dao.save(student);
+        // --- 4. データベース更新 ---
+        // StudentDaoにsaveメソッド（またはupdateメソッド）がある想定
+        boolean result = sDao.save(student);
 
-        // ▼ 完了画面へ
-        req.getRequestDispatcher("/scoremanager/main/student_update_done.jsp")
-           .forward(req, resp);
+        // --- 5. 遷移先の決定 ---
+        if (result) {
+            // 更新成功：学生一覧へリダイレクト、または完了画面へ
+            response.sendRedirect("StudentUpdateDone.action");
+        } else {
+            // 更新失敗：エラーメッセージをセットして元の画面へ（簡易的な例）
+            request.setAttribute("error", "更新に失敗しました。");
+            request.getRequestDispatcher("student_update.jsp").forward(request, response);
+        }
     }
 }

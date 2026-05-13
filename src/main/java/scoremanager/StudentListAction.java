@@ -71,7 +71,7 @@ public class StudentListAction extends Action {
         request.setAttribute("class_num_set", classNumSet);
         request.setAttribute("students", students);
 
-        request.getRequestDispatcher("/scoremanager/main/student_list.jsp")
+        request.getRequestDispatcher("student_list.jsp")
                .forward(request, response);
     }
 }

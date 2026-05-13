@@ -1,10 +1,11 @@
 package scoremanager;
 
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import bean.School;
 import bean.Student;
 import bean.Teacher;
 import dao.ClassNumDao;
@@ -12,53 +13,34 @@ import dao.StudentDao;
 import tool.Action;
 
 public class StudentUpdateAction extends Action {
-
     @Override
-    public void execute(HttpServletRequest req, HttpServletResponse resp)
-            throws Exception {
-
-        HttpSession session = req.getSession();
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        HttpSession session = request.getSession();
         Teacher teacher = (Teacher) session.getAttribute("user");
-
-        // ▼ ログインチェック
-        if (teacher == null || !teacher.isAuthenticated()) {
-            resp.sendRedirect("Login.action");
-            return;
-        }
-
-        // ▼ パラメータ取得
-        String no = req.getParameter("no");
-        if (no == null || no.isEmpty()) {
-            resp.sendRedirect("StudentList.action");
-            return;
-        }
-
-        School school = teacher.getSchool();
+        
+        // 1. 変更したい学生の番号をリクエストから取得
+        String no = request.getParameter("no");
+        
         StudentDao sDao = new StudentDao();
+        // 2. DBから現在の学生情報を取得
+        Student student = sDao.get(no); 
+        
+        // 3. クラス一覧を取得（セレクトボックス用）
+        ClassNumDao cDao = new ClassNumDao();
+        List<String> list = cDao.filter(teacher.getSchool());
 
-        // ▼ 学生情報取得
-        Student student = sDao.get(no);
-
-        if (student == null) {
-            req.setAttribute("error", "学生情報が見つかりません");
-            req.getRequestDispatcher("/scoremanager/main/student_update.jsp")
-               .forward(req, resp);
-            return;
+        if (student != null) {
+            // 4. 取得したデータをリクエスト属性にセットしてJSPへ送る
+            request.setAttribute("no", student.getNo());
+            request.setAttribute("name", student.getName());
+            request.setAttribute("ent_year", student.getEntYear());
+            request.setAttribute("class_num", student.getClassNum());
+            request.setAttribute("is_attend", student.isAttend());
+            request.setAttribute("classList", list);
         }
 
-        // ▼ クラス一覧（プルダウン用）
-        ClassNumDao cDao = new ClassNumDao();
-        var classNumSet = cDao.filter(school);
-
-        // ▼ 入学年度一覧（StudentList と同じ）
-        var entYearSet = sDao.filterEntYear(school);
-
-        // ▼ JSP へ渡す
-        req.setAttribute("student", student);
-        req.setAttribute("class_num_set", classNumSet);
-        req.setAttribute("ent_year_set", entYearSet);
-
-        req.getRequestDispatcher("/scoremanager/main/student_update.jsp")
-           .forward(req, resp);
+        // 5. 変更画面（JSP）へフォワード
+        request.getRequestDispatcher("student_update.jsp").forward(request, response);
     }
 }

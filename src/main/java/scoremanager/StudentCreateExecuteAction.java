@@ -53,7 +53,7 @@ public class StudentCreateExecuteAction extends Action {
             request.setAttribute("name", name);
             request.setAttribute("class_num", class_num);
 
-            request.getRequestDispatcher("/scoremanager/main/student_create.jsp")
+            request.getRequestDispatcher("student_create.jsp")
                    .forward(request, response);
             return;
         }

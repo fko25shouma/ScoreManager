@@ -3,26 +3,7 @@
 <jsp:include page="/header.jsp"/>
 <div class="layout">
 
-  <!-- ▼ サイドバー -->
-  <aside class="sidebar">
-    <nav>
-      <ul>
-   
-        <li><a href="Menu.action">メニュー</a></li>
-
-        <li><a href="StudentList.action">学生管理</a></li>
-
-        <li class="label">成績管理</li>
-        
-        <li class="child"><a href="test_regist.jsp">成績登録</a></li>
-        
-        <li class="child"><a href="test_list.jsp">成績参照</a></li>
-        
-        <li><a href="subject_list.jsp">科目管理</a></li>
-        
-      </ul>
-    </nav>
-  </aside>
+  
 <section class="me-4">
 
     <h2 class="h3 mb-4 fw-normal bg-secondary bg-opacity-10 py-2 px-4 mt-3">

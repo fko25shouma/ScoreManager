@@ -1,90 +1,59 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:include page="/header.jsp"/>
 
-<body class="bg-light">
 
-<jsp:include page="/header.jsp" />
 
-<div class="container mt-4">
+<div class="layout">
 
-    <!-- タイトル -->
-    <h2 class="h3 mb-4 fw-normal bg-secondary bg-opacity-10 py-2 px-4">
-        学生情報変更
-    </h2>
+    <main class="main-content">
+        <h2>学生情報変更</h2>
 
-    <!-- ▼ エラーメッセージ -->
-    <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
-    </c:if>
+        <form action="StudentUpdateExecute.action" method="post">
+            <table class="form-table">
+                <tr>
+                    <td class="label-cell"><label>入学年度</label></td>
+                    <td><input type="text" name="ent_year" value="${ent_year}" readonly></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><label>学生番号</label></td>
+                    <td><input type="text" name="no" value="${no}" readonly></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><label>氏名</label></td>
+                    <td><input type="text" name="name" value="${name}" maxlength="30" required></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><label>クラス</label></td>
+                    <td>
+                        <select name="class_num">
+                            <c:forEach var="class_num" items="${classList}">
+                                <option value="${class_num}" ${class_num == currentClass ? 'selected' : ''}>
+                                    ${class_num}
+                                </option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><label>在学中</label></td>
+                    <td>
+                        <input type="checkbox" name="is_attend" value="1" ${is_attend == '1' ? 'checked' : ''}>
+                    </td>
+                </tr>
+            </table>
 
-    <form action="<%= request.getContextPath() %>/StudentUpdateExecute.action"
-          method="post"
-          class="card shadow-sm">
-
-        <div class="card-body row g-3">
-
-            <!-- 学生番号（変更不可） -->
-            <div class="col-md-4">
-                <label class="form-label fw-bold">学生番号</label>
-                <input type="text" class="form-control" value="${student.no}" disabled>
-                <input type="hidden" name="no" value="${student.no}">
+            <div class="button-area">
+                <input type="submit" name="login" value="変更">
             </div>
+        </form>
 
-            <!-- 氏名 -->
-            <div class="col-md-4">
-                <label class="form-label fw-bold">氏名</label>
-                <input type="text" name="name" class="form-control"
-                       value="${student.name}">
-                <c:if test="${not empty error_name}">
-                    <div class="text-danger small">${error_name}</div>
-                </c:if>
-            </div>
-
-            <!-- 入学年度 -->
-            <div class="col-md-4">
-                <label class="form-label fw-bold">入学年度</label>
-                <select name="ent_year" class="form-select">
-                    <option value="">選択</option>
-                    <c:forEach var="y" items="${ent_year_set}">
-                        <option value="${y}" <c:if test="${y == student.entYear}">selected</c:if>>
-                            ${y}
-                        </option>
-                    </c:forEach>
-                </select>
-                <c:if test="${not empty error_ent_year}">
-                    <div class="text-danger small">${error_ent_year}</div>
-                </c:if>
-            </div>
-
-            <!-- クラス -->
-            <div class="col-md-4">
-                <label class="form-label fw-bold">クラス</label>
-                <select name="class_num" class="form-select">
-                    <option value="">選択</option>
-                    <c:forEach var="c" items="${class_num_set}">
-                        <option value="${c}" <c:if test="${c == student.classNum}">selected</c:if>>
-                            ${c}
-                        </option>
-                    </c:forEach>
-                </select>
-                <c:if test="${not empty error_class_num}">
-                    <div class="text-danger small">${error_class_num}</div>
-                </c:if>
-            </div>
-
-            <!-- ボタン -->
-            <div class="col-12 text-end mt-3">
-                <button type="submit" class="btn btn-primary px-4">更新する</button>
-                <a href="<%= request.getContextPath() %>/StudentList.action"
-                   class="btn btn-secondary ms-2">戻る</a>
-            </div>
-
+        <div class="button-area">
+            <a href="StudentList.action">戻る</a>
         </div>
-
-    </form>
-
+    </main>
 </div>
 
-<jsp:include page="/footer.html" />
 
-</body>
+
+<jsp:include page="/footer.jsp"/>

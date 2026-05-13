@@ -4,6 +4,8 @@
 <body class="bg-light">
 
 <jsp:include page="/header.jsp" />
+<jsp:include page="/nav.jsp"/>
+
 
 <div class="container mt-4">
 

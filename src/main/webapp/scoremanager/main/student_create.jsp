@@ -5,24 +5,7 @@
 
  <body>
     <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container-fluid">
-            <span class="navbar-brand fw-bold">得点管理システム</span>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="Menu.action">ホーム</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="StudentList.action">学生管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="TestList.action">成績管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="SubjectList.action">科目管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="ClassList.action">クラス管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="TeacherList.action">ユーザ管理</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<jsp:include page="nav.jsp"/>
 
 <section class="me-4">
 

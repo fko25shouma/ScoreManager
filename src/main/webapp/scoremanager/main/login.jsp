@@ -52,7 +52,8 @@
         }
     </style>
 </head>
-
+<jsp:include page="nav.jsp"/>
+<jsp:include page="/header.jsp"/>
 <body>
 
 <!-- ▼ ログアウト後メッセージ -->

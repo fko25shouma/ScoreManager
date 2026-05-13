@@ -44,21 +44,34 @@
                        href="TeacherList.action">ユーザ管理</a>
                 </li>
 
-                <c:choose>
-                    <c:when test="${not empty loginUserName}">
-                        <li class="nav-item ms-lg-3">
-                            <span class="nav-link text-white-50 small">ようこそ、${loginUserName} 様</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="Logout.action">ログアウト</a>
-                        </li>
-                    </c:when>
-                </c:choose>
-
-            </ul>
-        </div>
-    </div>
-</nav>
+	                <!-- ▼ ログイン状態で表示切替 -->
+	                <c:choose>
+	                    <c:when test="${not empty loginUserName}">
+	                        <li class="nav-item">
+	                            <span class="nav-link text-white">ようこそ、${loginUserName} 様</span>
+	                        </li>
+	                        <li class="nav-item">
+	                            <a class="nav-link" href="Logout.action">ログアウト</a>
+	                        </li>
+	                    </c:when>
+	                    <c:otherwise>
+	                        <li class="nav-item">
+	                            <a class="nav-link" href="Login.action">ログイン</a>
+	                        </li>
+	                    </c:otherwise>
+	                </c:choose>
+	
+	            </ul>
+	        </div>
+	    </div>
+	</nav>
+	
+	<!-- ▼ ログアウト後メッセージ -->
+	<c:if test="${not empty logoutMessage}">
+	    <div class="alert alert-info text-center m-0">
+	        ${logoutMessage}
+	    </div>
+	</c:if>
 
 <style>
 /* 現在のページをより目立たせるための追加スタイル */

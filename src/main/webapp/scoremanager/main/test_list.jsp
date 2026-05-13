@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <jsp:include page="/header.jsp" />
-<jsp:include page="/nav.jsp"/>
+<jsp:include page="nav.jsp"/>
 
 <body>
     <!-- ナビゲーションバー -->

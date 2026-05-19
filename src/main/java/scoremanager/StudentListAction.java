@@ -20,12 +20,12 @@ public class StudentListAction extends Action {
         // ▼ ログインチェック（チーム仕様と統一）
         HttpSession session = request.getSession();
         Teacher teacher = (Teacher) session.getAttribute("user");
-
         if (teacher == null || !teacher.isAuthenticated()) {
             request.getRequestDispatcher("/scoremanager/main/login.jsp")
                    .forward(request, response);
             return;
         }
+        
 
         // ▼ パラメータ取得
         String entYearStr = request.getParameter("f1");
@@ -71,7 +71,7 @@ public class StudentListAction extends Action {
         request.setAttribute("class_num_set", classNumSet);
         request.setAttribute("students", students);
 
-        request.getRequestDispatcher("student_list.jsp")
+        request.getRequestDispatcher("/scoremanager/main/student_list.jsp")
                .forward(request, response);
     }
 }

@@ -2,11 +2,11 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <jsp:include page="/header.jsp"/>
 <jsp:include page="nav.jsp"/>
-<body>
+
 
 <!-- メインコンテンツ -->
 	<div class="container mt-4">
-	 <h2 class="h3 mb-4 bg-secondary bg-opacity-10 py-2 px-4">メインメニュー</h2>
+	 <h2 class="h3 mb-4 fw-bord bg-secondary bg-opacity-10 py-2 px-4">メインメニュー</h2>
 	
 	    <div class="row g-3 mb-4">
 	
@@ -143,8 +143,9 @@
 		</div>
 	</div>
 </body>
-<jsp:include page="/footer.html"/>
+<jsp:include page="/footer.jsp"/>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 
 

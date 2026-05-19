@@ -3,7 +3,6 @@
 <jsp:include page="/header.jsp"/>
 <jsp:include page="nav.jsp"/>
 <body>
-
 <!-- ▼ メインコンテンツ -->
 <div class="container mt-4">
 

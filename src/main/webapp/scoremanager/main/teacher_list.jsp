@@ -8,10 +8,12 @@
 <!-- ▼ メインコンテンツ -->
 <div class="container mt-4">
 
-    <h2 class="h3 mb-4 fw-normal bg-secondary bg-opacity-10 py-2 px-4">
+    <h2 class="h3 mb-4 bg-secondary bg-opacity-10 py-2 px-4">
         ユーザ管理
     </h2>
+	
 
+	
     <!-- 新規登録カード -->
     <div class="row mb-4">
         <div class="col-md-12">
@@ -26,6 +28,28 @@
         </div>
     </div>
 
+	<!-- ▼ 検索フォーム -->
+	<form action="TeacherList.action" method="get" class="row mb-4">
+	    <div class="col-md-4">
+	        <input type="text" name="keyword" class="form-control"
+	               value="${param.keyword}" placeholder="ID または 氏名で検索">
+	    </div>
+	    <div class="col-md-2">
+	        <button class="btn btn-primary w-100">検索</button>
+	    </div>
+	</form>
+	<!-- ▼ 並び替え -->
+	<div class="mb-3">
+	    <a href="TeacherList.action?sort=id&keyword=${param.keyword}" class="me-3">ID順</a>
+	    <a href="TeacherList.action?sort=name&keyword=${param.keyword}">名前順</a>
+	</div>
+	
+	<c:if test="${not empty list}">
+	    <p class="text-muted mb-2">
+	        検索結果：${count} 件
+	    </p>
+	</c:if>
+	
     <!-- ▼ ユーザ一覧 -->
     <div class="card shadow-sm">
         <div class="card-body">

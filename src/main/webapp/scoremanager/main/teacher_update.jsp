@@ -4,6 +4,7 @@
 <jsp:include page="nav.jsp"/>
 <body>
 
+
 <!-- ▼ メインコンテンツ -->
 <div class="container mt-4">
 
@@ -23,7 +24,7 @@
                     <input type="hidden" name="id" value="${id}">
                 </div>
 
-                <!-- PASSWORD（変更不可） -->
+                <!-- PASSWORD-->
                 <div class="mb-4">
                     <label class="form-label fw-bold">PASSWORD</label>
                     <input type="password" class="form-control" value="${password}" disabled>
@@ -35,6 +36,14 @@
                     <label class="form-label fw-bold">氏名</label>
                     <input type="text" name="name" class="form-control"
                            value="${name}" placeholder="氏名を入力してください">
+                    <c:if test="${not empty errorName}">
+                        <%-- error.jspの埋め込む --%>
+	                    <div class="text-warning mt-1">
+		              		<jsp:include page="/error.jsp">
+		                 	<jsp:param name="message" value="${errorName}" />
+		               		</jsp:include>
+	               		</div>
+                    </c:if>
                 </div>
 
                 <!-- ボタン（横いっぱい） -->

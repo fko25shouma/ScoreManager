@@ -81,5 +81,4 @@
     </div>
 </div>
 
-<%-- footer.htmlはwebapp直下のため /footer.html --%>
-<jsp:include page="/footer.html" />
+<jsp:include page="/footer.jsp" />

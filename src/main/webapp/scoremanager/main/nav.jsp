@@ -24,11 +24,23 @@
                        href="StudentList.action">学生管理</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link ${uri.contains('test') ? 'active fw-bold border-bottom' : ''}" 
-                       href="TestList.action">成績管理</a>
-                </li>
-                
+                <li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle 
+				       ${uri.contains('test') ? 'active fw-bold border-bottom' : ''}"
+				       href="#" id="testDropdown" role="button" data-bs-toggle="dropdown">
+				        成績管理
+				    </a>
+				
+				    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="testDropdown">
+				        <li>
+				            <a class="dropdown-item" href="TestRegist.action">成績登録</a>
+				        </li>
+				        <li>
+				            <a class="dropdown-item" href="TestList.action">成績参照</a>
+				        </li>
+				    </ul>
+				</li>
+
                 <li class="nav-item">
                     <a class="nav-link ${uri.contains('subject') ? 'active fw-bold border-bottom' : ''}" 
                        href="SubjectList.action">科目管理</a>

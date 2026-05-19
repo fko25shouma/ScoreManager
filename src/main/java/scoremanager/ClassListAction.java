@@ -31,6 +31,7 @@ public class ClassListAction extends Action {
         List<String> list = dao.filter(school);
 
         request.setAttribute("list", list);
+        request.setAttribute("count", list.size());
 
         request.getRequestDispatcher("/scoremanager/main/class_list.jsp")
                .forward(request, response);

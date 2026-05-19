@@ -1,11 +1,7 @@
 package scoremanager;
 
-import java.io.IOException;
 import java.util.List;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -15,43 +11,54 @@ import bean.Teacher;
 import bean.TestListSubject;
 import dao.SubjectDao;
 import dao.TestListSubjectDao;
+import tool.Action; // ★ここが超重要：Actionクラスをインポート
 
-@WebServlet("/scoremanager/main/TestListSubjectExecute.action")
-public class TestListSubjectExecuteAction extends HttpServlet {
+// ★ HttpServlet ではなく、Action を継承する形に修正
+public class TestListSubjectExecuteAction extends Action {
 
+    // ★ doPost ではなく、execute メソッドに修正
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
         HttpSession session = req.getSession();
         Teacher teacher = (Teacher) session.getAttribute("user");
 
         if (teacher == null) {
-            resp.sendRedirect(req.getContextPath() + "/login.jsp");
+            req.getRequestDispatcher("/scoremanager/main/login.jsp").forward(req, res);
             return;
         }
 
+        // ▼ JSPのフォームから送られてくるパラメータを取得
+        // （entYear と ent_year の両方の書き方に対応できるよう安全対策）
         String entYearStr = req.getParameter("entYear");
+        if (entYearStr == null) entYearStr = req.getParameter("ent_year");
+
         String classNum = req.getParameter("classNum");
+        if (classNum == null) classNum = req.getParameter("class_num");
+
         String subjectCd = req.getParameter("subjectCd");
+        if (subjectCd == null) subjectCd = req.getParameter("subject_cd");
 
         try {
-            // 入力バリデーション [修正案反映]
-            if (entYearStr == null || subjectCd == null || subjectCd.isEmpty()) {
-                throw new Exception("必須項目を選択してください");
+            // 入力バリデーション
+            if (entYearStr == null || entYearStr.isEmpty() || subjectCd == null || subjectCd.isEmpty()) {
+                req.setAttribute("error", "必須項目（年度、クラス、科目）を選択してください");
+                req.getRequestDispatcher("/scoremanager/main/test_list.jsp").forward(req, res);
+                return;
             }
 
             int entYear = Integer.parseInt(entYearStr);
 
-            // シーケンス図に基づき、まず科目の妥当性をDAOで確認
+            // 科目の妥当性を確認（空白対策のためのtrimも追加）
             SubjectDao subjectDao = new SubjectDao();
-            Subject subject = subjectDao.get(subjectCd, teacher.getSchool());
+            Subject subject = subjectDao.get(subjectCd.trim(), teacher.getSchool());
 
             if (subject != null) {
                 // 科目情報を元に、指定クラス全員の10回分の成績を取得
                 TestListSubjectDao dao = new TestListSubjectDao();
-                List<TestListSubject> list = dao.filter(entYear, classNum, subject, teacher.getSchool());
+                List<TestListSubject> list = dao.filter(entYear, classNum.trim(), subject, teacher.getSchool());
 
+                // 取得したデータをJSPへ渡す
                 req.setAttribute("subject", subject);
                 req.setAttribute("entYear", entYear);
                 req.setAttribute("classNum", classNum);
@@ -66,6 +73,7 @@ public class TestListSubjectExecuteAction extends HttpServlet {
             req.setAttribute("error", e.getMessage());
         }
 
-        req.getRequestDispatcher("/scoremanager/main/test_list_subject.jsp").forward(req, resp);
+        // ▼ 科目別成績一覧画面へフォワード
+        req.getRequestDispatcher("/scoremanager/main/test_list_subject.jsp").forward(req, res);
     }
 }

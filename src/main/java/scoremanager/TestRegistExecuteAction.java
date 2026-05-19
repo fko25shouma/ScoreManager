@@ -28,27 +28,26 @@ public class TestRegistExecuteAction extends Action {
         }
         School school = teacher.getSchool();
 
-        // 1. パラメータ取得
+        // パラメータ取得と空白除去
         String entYearStr = req.getParameter("ent_year");
         String classNum = req.getParameter("class_num");
         String subjectCd = req.getParameter("subject_cd");
         String numStr = req.getParameter("num");
         String studentNo = req.getParameter("student_no");
 
-        // 空白除去（CHAR型対策）
         if (studentNo != null) studentNo = studentNo.trim();
         if (classNum != null) classNum = classNum.trim();
         if (subjectCd != null) subjectCd = subjectCd.trim();
 
-        // 2. プルダウン用データの再セット
+        // プルダウン用データの再セット
         ClassNumDao classNumDao = new ClassNumDao();
         SubjectDao subjectDao = new SubjectDao();
         StudentDao studentDao = new StudentDao();
+        
         req.setAttribute("class_num_set", classNumDao.filter(school));
         req.setAttribute("subject_list", subjectDao.filter(school));
         req.setAttribute("ent_year_set", studentDao.filterEntYear(school));
 
-        // 3. 必須チェック
         if (subjectCd == null || subjectCd.isEmpty() || numStr == null || numStr.isEmpty()) {
             req.setAttribute("error", "科目と回数を選択してください");
             req.getRequestDispatcher("/scoremanager/main/test_regist.jsp").forward(req, res);
@@ -57,22 +56,28 @@ public class TestRegistExecuteAction extends Action {
 
         int num = Integer.parseInt(numStr);
         Subject subject = subjectDao.get(subjectCd, school);
+
+        // ★【安全装置】科目が取得できなかった場合はここで弾く（500エラー防止）
+        if (subject == null) {
+            req.setAttribute("error", "指定された科目データが存在しません（科目コード: " + subjectCd + "）");
+            setAttributes(req, entYearStr, classNum, subjectCd, num, studentNo, null);
+            req.getRequestDispatcher("/scoremanager/main/test_regist.jsp").forward(req, res);
+            return;
+        }
+
         List<Student> studentList = new ArrayList<>();
 
-        // 4. 検索
+        // 学生の検索
         if (studentNo != null && !studentNo.isEmpty()) {
-            // 学生番号による個別検索
             Student student = studentDao.get(studentNo);
-            // 自校の学生かどうか判定（TRIM対応したDAOを使用）
-            if (student != null && student.getSchool().getCd().equals(school.getCd().trim())) {
+            if (student != null && student.getSchool().getCd().trim().equals(school.getCd().trim())) {
                 studentList.add(student);
             } else {
                 req.setAttribute("error", "学生番号（" + studentNo + "）は見つかりませんでした。");
             }
         } else if (entYearStr != null && !entYearStr.isEmpty() && classNum != null && !classNum.isEmpty()) {
-            // 年度とクラスによる一括検索
             int entYear = Integer.parseInt(entYearStr);
-            studentList = studentDao.filter(school, entYear, classNum, true);
+            studentList = studentDao.filter(school, entYear, classNum, false); 
             if (studentList.isEmpty()) {
                 req.setAttribute("error", "条件に一致する学生が存在しません。");
             }
@@ -80,14 +85,13 @@ public class TestRegistExecuteAction extends Action {
             req.setAttribute("error", "入学年度とクラス、または学生番号を入力してください。");
         }
 
-        // 5. 成績データの準備
         TestDao testDao = new TestDao();
         List<Test> testList = new ArrayList<>();
         if (!studentList.isEmpty()) {
             testList = testDao.list(studentList, subject, school, num);
         }
 
-        // 6. 保存処理
+        // 保存処理
         if (req.getParameter("regist") != null && !testList.isEmpty()) {
             for (Test t : testList) {
                 String pStr = req.getParameter("point_" + t.getStudent().getNo());
@@ -98,11 +102,13 @@ public class TestRegistExecuteAction extends Action {
                             t.setPoint(point);
                         } else {
                             req.setAttribute("error", "点数は0〜100の間で入力してください。");
+                            setAttributes(req, entYearStr, classNum, subjectCd, num, studentNo, testList);
                             req.getRequestDispatcher("/scoremanager/main/test_regist.jsp").forward(req, res);
                             return;
                         }
                     } catch (NumberFormatException e) {
-                        req.setAttribute("error", "点数には数字を入力してください。");
+                        req.setAttribute("error", "点数には正しい数値を入力してください。");
+                        setAttributes(req, entYearStr, classNum, subjectCd, num, studentNo, testList);
                         req.getRequestDispatcher("/scoremanager/main/test_regist.jsp").forward(req, res);
                         return;
                     }
@@ -113,14 +119,18 @@ public class TestRegistExecuteAction extends Action {
             return;
         }
 
-        // 7. JSPへの値セット
+        // JSPへの値セット
+        setAttributes(req, entYearStr, classNum, subjectCd, num, studentNo, testList);
+        req.getRequestDispatcher("/scoremanager/main/test_regist.jsp").forward(req, res);
+    }
+
+    private void setAttributes(HttpServletRequest req, String entYear, String classNum, 
+                               String subjectCd, int num, String studentNo, List<Test> testList) {
         req.setAttribute("test_list", testList);
-        req.setAttribute("ent_year", entYearStr);
+        req.setAttribute("ent_year", entYear);
         req.setAttribute("class_num", classNum);
         req.setAttribute("subject_cd", subjectCd);
         req.setAttribute("num", num);
         req.setAttribute("student_no", studentNo);
-
-        req.getRequestDispatcher("/scoremanager/main/test_regist.jsp").forward(req, res);
     }
 }

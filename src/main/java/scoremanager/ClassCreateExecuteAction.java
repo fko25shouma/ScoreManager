@@ -45,7 +45,7 @@ public class ClassCreateExecuteAction extends Action {
         ClassNum class_num = new ClassNum();
         class_num.setSchool(school);
         class_num.setClass_num(cd);
-        dao.save(class_num);
+        dao.save(class_num, cd);
 
         request.getRequestDispatcher("class_create_done.jsp")
                .forward(request, response);

@@ -24,7 +24,6 @@ public class TestListStudentExecuteAction extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession();
-        // 修正案：属性名を "user" に統一
         Teacher teacher = (Teacher) session.getAttribute("user");
 
         if (teacher == null) {
@@ -35,7 +34,7 @@ public class TestListStudentExecuteAction extends HttpServlet {
         String studentNo = req.getParameter("studentNo");
 
         try {
-            // シーケンス図に基づき、まずは学生の存在を確認
+            // 学生の存在を確認
             StudentDao sDao = new StudentDao();
             Student student = sDao.get(studentNo);
 
@@ -44,6 +43,35 @@ public class TestListStudentExecuteAction extends HttpServlet {
                 TestListStudentDao dao = new TestListStudentDao();
                 List<TestListStudent> list = dao.filter(student);
                 
+                // ==================================================
+                // ▼ ここから追加：複数回ある科目の平均点計算ロジック ▼
+                // ==================================================
+                java.util.Map<String, Integer> sumMap = new java.util.LinkedHashMap<>();
+                java.util.Map<String, Integer> countMap = new java.util.LinkedHashMap<>();
+
+                // 科目ごとの合計点と回数を集計
+                for (TestListStudent t : list) {
+                    String subjectName = t.getSubjectName();
+                    sumMap.put(subjectName, sumMap.getOrDefault(subjectName, 0) + t.getPoint());
+                    countMap.put(subjectName, countMap.getOrDefault(subjectName, 0) + 1);
+                }
+
+                // 2回以上テストがある科目だけ平均を計算
+                java.util.Map<String, String> avgMap = new java.util.LinkedHashMap<>();
+                for (String subjectName : countMap.keySet()) {
+                    int count = countMap.get(subjectName);
+                    if (count > 1) {
+                        double avg = (double) sumMap.get(subjectName) / count;
+                        // 小数点第1位までにフォーマットして格納
+                        avgMap.put(subjectName, String.format("%.1f", avg));
+                    }
+                }
+                // 計算結果をJSPへ渡す
+                req.setAttribute("avg_map", avgMap);
+                // ==================================================
+                // ▲ 追加ここまで ▲
+                // ==================================================
+
                 req.setAttribute("student", student);
                 req.setAttribute("list", list);
             } else {

@@ -15,7 +15,7 @@
 
     <!-- ヘッダ -->
     <jsp:include page="/header.jsp" />
-    <jsp:include page="/nav.jsp"/>
+    <jsp:include page="nav.jsp"/>
 
     <div class="d-flex">
 

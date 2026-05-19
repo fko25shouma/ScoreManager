@@ -13,44 +13,38 @@ public class StudentUpdateExecuteAction extends Action {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // --- 1. 準備 ---
         HttpSession session = request.getSession();
         Teacher teacher = (Teacher) session.getAttribute("user");
         StudentDao sDao = new StudentDao();
 
-        // --- 2. リクエストパラメータの取得 ---
+        // リクエストパラメータの取得
         String entYearStr = request.getParameter("ent_year");
         String no = request.getParameter("no");
         String name = request.getParameter("name");
         String classNum = request.getParameter("class_num");
-        String isAttendStr = request.getParameter("is_attend"); // チェックボックス
+        String isAttendStr = request.getParameter("is_attend"); 
 
-        // 数値への変換
         int entYear = Integer.parseInt(entYearStr);
-        // チェックボックスがONなら true, OFF(null)なら false
         boolean isAttend = (isAttendStr != null);
 
-        // --- 3. 更新用データの作成 ---
-        // 既存の学生情報を取得するか、新しくインスタンスを作って値をセットする
+        // 更新用エンティティデータの構築
         Student student = new Student();
-        student.setNo(no);
+        student.setNo(no != null ? no.trim() : "");
         student.setName(name);
         student.setEntYear(entYear);
-        student.setClassNum(classNum);
+        student.setClassNum(classNum != null ? classNum.trim() : "");
         student.setAttend(isAttend);
-        student.setSchool(teacher.getSchool()); // ログインユーザーの学校をセット
+        student.setSchool(teacher.getSchool()); 
 
-        // --- 4. データベース更新 ---
-        // StudentDaoにsaveメソッド（またはupdateメソッド）がある想定
+        // データベース更新
         boolean result = sDao.save(student);
 
-        // --- 5. 遷移先の決定 ---
         if (result) {
-            // 更新成功：学生一覧へリダイレクト、または完了画面へ
-            response.sendRedirect("StudentUpdateDone.action");
+            // 【設計書準拠修正】
+            // 不要なActionクラスを介さず、直接完了画面のJSPへフォワードする
+            request.getRequestDispatcher("student_update_done.jsp").forward(request, response);
         } else {
-            // 更新失敗：エラーメッセージをセットして元の画面へ（簡易的な例）
-            request.setAttribute("error", "更新に失敗しました。");
+            request.setAttribute("error", "学生情報の更新に失敗しました。");
             request.getRequestDispatcher("student_update.jsp").forward(request, response);
         }
     }

@@ -43,7 +43,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="student-f3-check" name="f3" value="t"
                                             <c:if test="${!empty f3}">checked</c:if>>
-                                        <label class="form-check-label" for="student-f3-check">在学中</label>
+                                        <label class="form-check-label" for="student-f3-check">在学中のみに絞込む</label>
                                     </div>
                                 </div>
                                 <div class="col-md-2">

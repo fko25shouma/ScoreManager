@@ -11,7 +11,7 @@ import bean.School;
 
 public class ClassNumDao extends Dao {
 
-    // ▼ 1件取得 (TRIM関数を追加して固定長文字に対応)
+    // 主キーに該当するクラス情報を1件取得します
     public ClassNum get(String class_num, School school) throws Exception {
         ClassNum classNum = null;
         String sql = "SELECT * FROM class_num WHERE TRIM(class_num) = ? AND TRIM(school_cd) = ?";
@@ -39,13 +39,9 @@ public class ClassNumDao extends Dao {
         return classNum;
     }
 
-    /**
-     * ▼ クラス番号一覧取得
-     * ハードコードされていたダミーデータを撤去し、DBから動的に取得するよう修正しました。
-     */
+    // 学校コードに紐づくクラス番号の一覧を取得します
     public List<String> filter(School school) throws Exception {
         List<String> list = new ArrayList<>();
-        // 学校コード（SCHOOL_CD）のCHAR型空白対策として TRIM() を適用して比較します
         String sql = "SELECT class_num FROM class_num WHERE TRIM(school_cd) = ? ORDER BY class_num";
 
         try (Connection con = getConnection();
@@ -55,7 +51,6 @@ public class ClassNumDao extends Dao {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    // 取得したクラス番号をリストに追加（末尾空白をトリム）
                     list.add(rs.getString("class_num").trim());
                 }
             }
@@ -65,7 +60,7 @@ public class ClassNumDao extends Dao {
         return list;
     }
 
-    // ▼ 新規登録・通常保存
+    // 新規追加のためのインサート文を実行します
     public boolean insert(ClassNum classNum) throws Exception {
         String sql = "INSERT INTO class_num (class_num, school_cd) VALUES (?, ?)";
 
@@ -81,7 +76,21 @@ public class ClassNumDao extends Dao {
         }
     }
 
-    // ▼ クラス番号変更（旧番号 → 新番号）
+    // 新規登録画面（Action）から呼び出される単一引数の保存メソッドです
+    public boolean save(ClassNum classNum) throws Exception {
+        // データベースに同一キーのデータが存在するか確認します
+        ClassNum exists = get(classNum.getClass_num(), classNum.getSchool());
+        
+        if (exists == null) {
+            // 存在しない場合は新規登録処理を実行します
+            return insert(classNum);
+        } else {
+            // すでに存在する場合は何もせず確定処理とします
+            return true;
+        }
+    }
+
+    // クラス番号変更（旧番号から新番号への更新処理）を実行します
     public boolean save(ClassNum classNum, String newClassNum) throws Exception {
         String sql = """
             UPDATE class_num
@@ -104,7 +113,7 @@ public class ClassNumDao extends Dao {
         }
     }
 
-    // ▼ 削除
+    // 対象のクラス情報を物理削除します
     public boolean delete(ClassNum classNum) throws Exception {
         String sql = "DELETE FROM class_num WHERE TRIM(school_cd) = ? AND TRIM(class_num) = ?";
 
